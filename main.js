@@ -25,7 +25,11 @@ class Player {
   constructor() {
 
     // Represent ship parts and upgrades as 'components'
-    let components = [new Component()];
+    let components = [
+      new Component({
+        name: 'satellite_hull',
+        storage_capacity: 10 })
+    ];
     //let components = [Hull];
     this.components = components;
 
