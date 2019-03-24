@@ -32,7 +32,12 @@ class Player {
     for (const [attribute, value] of Object.entries(attributes)) {
       console.log(`Iterating attribute: <${attribute}>`);
       let element_name = String(`player_attribute_${attribute}_p`);
-      let inner_html = String(`${attribute}: ${value}`);
+      let inner_html_attribute = String(attribute.split('_').join(' '));
+      // https://stackoverflow.com/questions/2332811/capitalize-words-in-string
+      inner_html_attribute = inner_html_attribute.replace(/\b\w/g, l => l.toUpperCase())
+      //inner_html_attribute = inner_html_attribute.charAt(0).toUpperCase() + inner_html_attribute.
+      //inner_html_attribute = inner_html_attribute.charAt(0).toUpper
+      let inner_html = String(`${inner_html_attribute}: ${value}`);
       element_map[element_name] = inner_html;
     }
     return element_map;
