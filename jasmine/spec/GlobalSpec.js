@@ -1,8 +1,16 @@
-describe('Test suite', function() {
-  it('test expectation', function() {
-    expect(true).toBe(true);
-  });
-});
+describe('Dev Game test', function() {
+
+  /*
+  it('Game ID-value map yields correct armor rating', function() {
+    expect(Game.id_value_map.player_attribute_armor_rating).toBe(10);
+  })
+  */
+
+})
+
+
+describe('Dev PageController test', function() {})
+
 
 describe('Dev Player test', function() {
 
