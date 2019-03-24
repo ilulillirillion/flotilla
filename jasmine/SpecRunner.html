@@ -4,6 +4,8 @@
   <meta charset="utf-8">
   <title>Jasmine Spec Runner v3.3.0</title>
 
+  <script src='../main.js'></script>
+
   <link rel="shortcut icon" type="image/png" href="lib/jasmine-3.3.0/jasmine_favicon.png">
   <link rel="stylesheet" href="lib/jasmine-3.3.0/jasmine.css">
 
@@ -12,6 +14,7 @@
   <script src="lib/jasmine-3.3.0/boot.js"></script>
 
   <!-- include source files here... -->
+  
 
   <!-- include spec files here... -->
   <script src='spec/GlobalSpec.js'></script>
@@ -19,5 +22,11 @@
 </head>
 
 <body>
+  <!-- Simulate the body of the html file. Should remove this -->
+  <h1>Flotilla!</h1>
+  <div id='player_info_div'>
+    <p id='player_attribute_armor_rating_p'></p>
+    <p id='player_attribute_storage_capacity_p'></p>
+  </div>
 </body>
 </html>
