@@ -44,10 +44,13 @@ describe('Dev Player test', function() {
 
   it('Player is initialized with correct storage capacity', function() {
     //console.log(fakePlayer);
-    expect(fakePlayer.storage_capacity).toBe(expected_values.player_initial_storage_capacity);
+    console.log('Testing player storage capacity');
+    console.log(fakePlayer);
+    console.log(fakePlayer.storage_capacity);
+    expect(fakePlayer.attributes.storage_capacity).toBe(expected_values.player_initial_storage_capacity);
   });
   it('Player is initialized with correct armor rating', function() {
-    expect(fakePlayer.armor_rating).toBe(expected_values.player_initial_armor_rating);
+    expect(fakePlayer.attributes.armor_rating).toBe(expected_values.player_initial_armor_rating);
   });
 
   it('Player element-map yields correct armor rating', function() {
