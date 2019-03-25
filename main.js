@@ -47,11 +47,16 @@ class Player {
     ];
     this.components = components;
 
+    this.status = {
+      'energy': 0
+    };
+
   }
 
   get element_map() {
     console.log('Deriving element map');
     let element_map = {};
+
     let attributes = this.attributes;
     console.log(attributes);
     for (const [attribute, value] of Object.entries(attributes)) {
@@ -59,12 +64,24 @@ class Player {
       let element_name = String(`player_attribute_${attribute}_p`);
       let inner_html_attribute = String(attribute.split('_').join(' '));
       // https://stackoverflow.com/questions/2332811/capitalize-words-in-string
-      inner_html_attribute = inner_html_attribute.replace(/\b\w/g, l => l.toUpperCase())
+      inner_html_attribute = inner_html_attribute.replace(/\b\w/g, l => l.toUpperCase());
       //inner_html_attribute = inner_html_attribute.charAt(0).toUpperCase() + inner_html_attribute.
       //inner_html_attribute = inner_html_attribute.charAt(0).toUpper
       let inner_html = String(`${inner_html_attribute}: ${value}`);
       element_map[element_name] = inner_html;
     }
+
+    /*
+    let status_elements = this.status;
+    for (const [status_element, value] of Object.entries(status_elements)) {
+      let element_name = String(`player_status_${status_element}_p`);
+      let inner_html_status_element_name = String(attribute.split('_').join(' '));
+      inner_html_status_element_name = inner_html_status_element_name.replace(/\b\w/g, l => l.toUpperCase());
+      let inner_html = String(`${inner_html_status_element_name}: ${value}`);
+      element_map[element_name] = inner_html;
+    }
+    */
+
     return element_map;
   }
 
@@ -119,9 +136,20 @@ class PageController {
 
   static initialize_document() {
 
+
     let player_info_div = document.createElement('div');
     player_info_div.setAttribute('id', 'player_info_div');
     document.body.append(player_info_div);
+
+
+    /*
+    Player.status.forEach(function(status_element) {
+      let paragraph = document.createElement('p');
+      paragraph.setAttribute('id', `player_status_${status_element}_p`);
+      player_info_div.appendChild(paragraph);
+    })
+    */
+
 
     /*
     let player_attribute_armor_rating_p = document.createElement('p');
