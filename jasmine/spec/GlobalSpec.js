@@ -50,6 +50,9 @@ describe('Dev Player test', function() {
     'armor_rating': {
       '1': 0,
       '2': 'Armor Rating: 0' },
+    'current_energy': {
+      '1': 0,
+      '2': 'Energy: 0' },
     'energy_capacity': {
       '1': 0,
       '2': 'Energy Capacity: 0' },
@@ -64,7 +67,7 @@ describe('Dev Player test', function() {
     console.log(attribute);
     console.log(expected_value);
     it(`Player is initialized with correct ${attribute}`, function() {
-      expect(fakePlayer.attributes[attribute]).toBe(expected_value['1']);
+      expect(fakePlayer.adjusted_attributes[attribute]).toBe(expected_value['1']);
     });
 
     it(`Player element-map yields correct ${attribute}`, function() {

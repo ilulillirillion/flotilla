@@ -24,15 +24,44 @@ class Component {
 }
 
 
+class PlayerAttribute {
+  constructor(name, value=0, display_name=null) {
+    this.name = name;
+    this.value = value;
+    this.display_name = display_name || name;
+  }
+}
+
+
 class Player {
   
-  static attributes = [
-    'armor_rating',
-    'storage_capacity',
-    'energy_capacity'
-  ];
+  /*
+  static base_attributes = {
+    'armor_rating': 0,
+    'storage_capacity': 0,
+    'current_energy': 0,
+    'energy_capacity': 0
+  };
+  */
 
   constructor() {
+
+    //this.base_attributes = Player.base_attributes;
+    /*
+    let attributes = {
+      'armor_rating': 0,
+      'storage_capacity': 0, 
+      'current_energy': 0,
+      'energy_capacity': 0
+    };
+    */
+    let attributes = [
+      new PlayerAttribute('armor_rating'),
+      new PlayerAttribute('storage_capacity'),
+      new PlayerAttribute('current_energy'),
+      new PlayerAttribute('energy_capacity')
+    ];
+    this.attributes = attributes;
 
     // Represent ship parts and upgrades as 'components'
     let components = [
@@ -47,9 +76,11 @@ class Player {
     ];
     this.components = components;
 
+    /*
     this.status = {
       'energy': 0
     };
+    */
 
   }
 
@@ -57,7 +88,8 @@ class Player {
     console.log('Deriving element map');
     let element_map = {};
 
-    let attributes = this.attributes;
+    //let attributes = this.attributes;
+    let attributes = this.adjusted_attributes;
     console.log(attributes);
     for (const [attribute, value] of Object.entries(attributes)) {
       console.log(`Iterating attribute: <${attribute}>`);
@@ -85,19 +117,38 @@ class Player {
     return element_map;
   }
 
-  get attributes() {
+  get adjusted_attributes() {
     //let attributes = {
     //  'armor_rating': 0,
     //  'storage_capacity': 0
     //};
     console.log('deriving attributes');
 
-    let attributes = {};
-    console.log(attributes);
-    console.log(Player.attributes);
+    //let attributes = {};
+
+    //let attributes = this.base_attributes;
+
+    let adjusted_attributes = {};
+
+    //console.log(attributes);
+    //console.log(Player.base_attributes);
+
+    //for (const [attribute, value] of Object.entries(Game.player.attributes)) {
+    Game.player.attributes.forEach(function(attribute) {
+      adjusted_attributes[attribute.name] = (adjusted_attributes[attribute.name] || 0) + attribute.value;
+    });
 
     this.components.forEach(function(component) {
-      Player.attributes.forEach(function(attribute) {
+      //Object.keys(component.modifiers).forEach(function(attribute) {
+      for (const [attribute, value] of Object.entries(component.modifiers)) {
+        adjusted_attributes[attribute] = (adjusted_attributes[attribute] || 0) + value;
+      }
+    });
+
+    /*
+    this.components.forEach(function(component) {
+      //Player.attributes.forEach(function(attribute) {
+      Object.keys(attributes).forEach(function(attribute) {
         //let value = component[attribute];
         console.log(component);
         console.log(component.modifiers[attribute]);
@@ -111,10 +162,11 @@ class Player {
       //attributes.storage_capacity += component.storage_capacity;
       //attributes.energy_capacity += component.energy_capacity;
     })
+    */
 
     console.log('Finished deriving attributes');
-    console.log(attributes);
-    return attributes;
+    console.log(adjusted_attributes);
+    return adjusted_attributes;
   }
 
   get armor_rating() {
@@ -161,9 +213,11 @@ class PageController {
     player_info_div.appendChild(player_attribute_storage_capacity_p);
     */
 
-    Player.attributes.forEach(function(attribute) {
+    //Object.keys(Player.base_attributes).forEach(function(attribute) {
+    //Object.keys(Game.player.attributes).forEach(function(attribute) {
+    Game.player.attributes.forEach(function(attribute) {
       let paragraph = document.createElement('p');
-      paragraph.setAttribute('id', `player_attribute_${attribute}_p`);
+      paragraph.setAttribute('id', `player_attribute_${attribute.name}_p`);
       player_info_div.appendChild(paragraph);
     })
 
@@ -173,6 +227,8 @@ class PageController {
     console.log('updating document');
     //console.log(id_value_map);
     for (const [element_id, inner_html] of Object.entries(Game.player.element_map)) {
+      console.log(element_id);
+      console.log(inner_html);
       let element = document.getElementById(element_id);
       element.innerHTML = inner_html;
     }
