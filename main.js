@@ -39,13 +39,14 @@ class EnergyMeasurement {
 
 
 class DynamicDocumentNode {
-  constructor(name, value, element_type, element_id, parent_id, inner_html_name) {
+  constructor(name, value, element_type, element_id, parent_id, inner_html_name, inner_html_format_macro=null) {
     this.name = name;
     this.value = value;
     this.element_type = element_type;
     this.element_id = element_id;
     this.parent_id = parent_id;
     this.inner_html_name = inner_html_name;
+    this.inner_html_format_macro = inner_html_format_macro;
   }
 
   get parent() {
@@ -66,17 +67,30 @@ class DynamicDocumentNode {
 
   get inner_html() {
     console.log('getting inner_html');
-    let inner_html = String(`${this.inner_html_name}: ${this.value}`);
+    let value = this.value;
+    console.log(`Raw value: <${value}>.`);
+    if (this.inner_html_format_macro == 'watts_si') {
+      //value = String(`${((value).toFixed(2))} watts`);
+      //value = String(`${Math.floor(value * 100 / 100).toFixed(2)} watts`);
+      //value = String(`${Math.floor(value * 1000 / 1000).toFixed(2)} watts`);
+      //value = String(`${(value * 1000).floor / 1000.0}`);
+      //parseInt('' + (num * 100)) / 100;
+      value = String(`${parseInt('' + (value * 100)) / 100} watts`);
+      //value = String(`${+value.toFixed(2)} watts`);
+      console.log(`watts_si value: <${value}>.`);
+    }
+    let inner_html = String(`${this.inner_html_name}: ${value}`);
     return inner_html;
   }
 }
 
 
 class Attribute {
-  constructor(name, value=0, display_name=null, maximum_value=null) {
+  constructor(name, value=0, display_name=null, value_format_macro=null, maximum_value=null) {
     this.name = name;
     this.display_name = display_name || name;
     this.value = value;
+    this.value_format_macro = value_format_macro;
   }
 
   get dynamic_document_node() {
@@ -87,7 +101,8 @@ class Attribute {
         element_type,
         String(`player_attribute_${this.name}_${element_type}`),
         String('player_info_div'),
-        this.display_name);
+        this.display_name,
+        this.value_format_macro);
     return dynamic_document_node;
   }
 }
@@ -99,7 +114,7 @@ class Player {
 
     let attributes = {
       'hull_integrity': new Attribute('hull_integrity', 0, 'Hull Integrity'),
-      'energy': new Attribute('energy', 0, 'Energy')
+      'energy': new Attribute('energy', 0, 'Energy', 'watts_si')
       //'energy': new Attribute('energy', new EnergyMeasurement(0), 'Energy')
     };
     this.attributes = attributes;
