@@ -82,13 +82,17 @@ class PageController {
 
 
     Object.values(Game.player.attributes).forEach(function(attribute) {
-
       let element = document.createElement(attribute.dynamic_document_node.element_type);
       element.setAttribute('id', attribute.dynamic_document_node.element_id);
       let parent = document.getElementById(attribute.dynamic_document_node.parent_id);
       parent.appendChild(element);
+    });
 
-    })
+    // World second ticker
+    let element = document.createElement(Game.world.epoch_seconds.element_type);
+    element.setAttribute('id', Game.world.epoch_seconds.element_id);
+    let parent = document.getElementById(Game.world.epoch_seconds.parent_id);
+    parent.appendChild(element);
 
   }
 
@@ -102,17 +106,31 @@ class PageController {
       let inner_html = attribute.dynamic_document_node.inner_html;
       element.innerHTML = inner_html;
     });
+
+    // World Epoch Seconds
+    console.log(Game.world.epoch_seconds);
+    let element = document.getElementById(Game.world.epoch_seconds.element_id);
+    //let parent = document.getElementById(Game.world.epoch_seconds.dynamic_document_node.parent_id);
+    let inner_html = Game.world.epoch_seconds.inner_html;
+    element.innerHTML = inner_html;
+
   }
 }
 
 
 class World {
   constructor() {
-    this.epoch_seconds = 0;
+    this.epoch_seconds = new DynamicDocumentNode(
+        'epoch_seconds',
+        0,
+        'p',
+        'world_epoch_seconds',
+        'player_info_div',
+        'World Age');
   }
 
   tick() {
-    this.epoch_seconds += 1;
+    this.epoch_seconds.value += 1;
   }
 }
 
