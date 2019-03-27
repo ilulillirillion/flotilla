@@ -54,9 +54,9 @@ class Player {
   
   constructor() {
 
-    let attributes = [
-      new Attribute('hull_integrity')
-    ];
+    let attributes = {
+      'hull_integrity': new Attribute('hull_integrity', 0, 'Hull Integrity')
+    };
     this.attributes = attributes;
 
     /*
@@ -192,7 +192,7 @@ class PageController {
 
     //Object.keys(Player.base_attributes).forEach(function(attribute) {
     //Object.keys(Game.player.attributes).forEach(function(attribute) {
-    Game.player.attributes.forEach(function(attribute) {
+    Object.values(Game.player.attributes).forEach(function(attribute) {
 
       let element = document.createElement(attribute.dynamic_document_node.element_type);
       element.setAttribute('id', attribute.dynamic_document_node.element_id);
@@ -222,7 +222,7 @@ class PageController {
     */
 
     // Attributes
-    Game.player.attributes.forEach(function(attribute) {
+    Object.values(Game.player.attributes).forEach(function(attribute) {
       let element = document.getElementById(attribute.dynamic_document_node.element_id);
       let parent = document.getElementById(attribute.dynamic_document_node.parent_id);
       let inner_html = attribute.dynamic_document_node.inner_html;
