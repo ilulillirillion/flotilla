@@ -54,9 +54,17 @@ class Player {
   constructor() {
 
     let attributes = {
-      'hull_integrity': new Attribute('hull_integrity', 0, 'Hull Integrity')
+      'hull_integrity': new Attribute('hull_integrity', 0, 'Hull Integrity'),
+      'energy': new Attribute('energy', 0, 'Energy')
     };
     this.attributes = attributes;
+
+  }
+
+  tick() {
+
+    // Player gains 0.001 energy every tick
+    this.attributes.energy.value += 0.001;
 
   }
 
@@ -98,10 +106,28 @@ class PageController {
 }
 
 
+class World {
+  constructor() {
+    this.epoch_seconds = 0;
+  }
+
+  tick() {
+    this.epoch_seconds += 1;
+  }
+}
+
+
 class Game {
   static player = new Player();
+  static world = new World();
   static page_controller = PageController;
-
+}
+Game.main_loop = function() {
+  setInterval(function() {
+    Game.player.tick();
+    Game.world.tick();
+    Game.page_controller.update_document();
+  }, 1000);
 }
 
 
@@ -111,6 +137,7 @@ window.onload = function() {
   
 
   Game.page_controller.initialize_document();
-  Game.page_controller.update_document(Game.id_value_map);
+  Game.page_controller.update_document();
+  Game.main_loop();
   console.log(Game.player.attributes);
 }
