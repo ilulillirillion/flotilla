@@ -11,31 +11,57 @@ class Component {
 }
 
 
-/*
-class EnergyMeasurement {
-  constructor(value) {
-    this.raw_value = value;
+//IDEA: create element on document in constructor?
+class GenericDocumentNode {
+  constructor(
+      value = '',
+      element_type = 'p',
+      element_id = null,
+      parent_id = null,
+  )
+
+  get parent() {
+    // Simply trust that the parent exists
+    let parent = document.getElementById(this.parent_id);
+    return parent;
   }
 
-  // TODO: Why doesn't this work?
-  //toString() {
-    //console.log(Number(this.raw_value.toFixed(2)));
-  //  return Number((this.raw_value).toFixed(1));
-  //}
+  get element() {
+    let element = document.getElementById(this.element_id);
+    if (!element) {
+      element = document.createElement(this.element_type);
+      this.parent.appendChild(element);
+    }
+    element.setAtrribute('id', this.element_id);
+    return element;
+  }
 
-  //valueOf() {
-  //  return this.raw_value;
-  //}
+  get inner_html() {
+    return this.value;
+  }
 
-  //get value() {
-  //  console.log('getting value')
-  //  let value = parseFloat(this.raw_value.toFixed(2));
-  //  return value;
-  //}
+  tick() {
+    this.element.innerHTML = this.inner_html;
+  }
 }
-*/
 
 
+class CountNode extends GenericDocumentNode {
+
+  // Think this needs to be psuedo named to work
+  constructor(
+    prefix,
+    tracked_value,
+    suffix
+  ) {
+    super();
+  }
+
+  get inner_html() {
+    let inner_html = value;
+
+  }
+}
 
 
 class DynamicDocumentNode {
@@ -70,13 +96,7 @@ class DynamicDocumentNode {
     let value = this.value;
     console.log(`Raw value: <${value}>.`);
     if (this.inner_html_format_macro == 'watts_si') {
-      //value = String(`${((value).toFixed(2))} watts`);
-      //value = String(`${Math.floor(value * 100 / 100).toFixed(2)} watts`);
-      //value = String(`${Math.floor(value * 1000 / 1000).toFixed(2)} watts`);
-      //value = String(`${(value * 1000).floor / 1000.0}`);
-      //parseInt('' + (num * 100)) / 100;
       value = String(`${parseInt('' + (value * 100)) / 100} watts`);
-      //value = String(`${+value.toFixed(2)} watts`);
       console.log(`watts_si value: <${value}>.`);
     }
     let inner_html = String(`${this.inner_html_name}: ${value}`);
@@ -108,6 +128,20 @@ class Attribute {
 }
 
 
+class Action {
+  constructor() {
+  }
+
+  get dynamic_document_node() {
+    let element_type = String('button');
+    let dynamic_document_node = new DynamicDocumentNode(
+      this.name,
+
+    )
+  }
+}
+
+
 class Player {
   
   constructor() {
@@ -115,18 +149,14 @@ class Player {
     let attributes = {
       'hull_integrity': new Attribute('hull_integrity', 0, 'Hull Integrity'),
       'energy': new Attribute('energy', 0, 'Energy', 'watts_si')
-      //'energy': new Attribute('energy', new EnergyMeasurement(0), 'Energy')
     };
     this.attributes = attributes;
 
   }
 
   tick() {
-
-    // Player gains 0.001 energy every tick
-    this.attributes.energy.value += 0.001;
-    //this.attribute.energy.value.raw_value += 0.001;
-
+    // Player gains energy every tick
+    this.attributes.energy.value += 0.01;
   }
 
 }
@@ -141,16 +171,6 @@ class PageController {
     player_info_div.setAttribute('id', 'player_info_div');
     document.body.append(player_info_div);
 
-
-    /*
-    Object.values(Game.player.attributes).forEach(function(attribute) {
-      let element = document.createElement(attribute.dynamic_document_node.element_type);
-      element.setAttribute('id', attribute.dynamic_document_node.element_id);
-      let parent = document.getElementById(attribute.dynamic_document_node.parent_id);
-      parent.appendChild(element);
-    });
-    */
-
     // World second ticker
     let element = document.createElement(Game.world.epoch_seconds.element_type);
     element.setAttribute('id', Game.world.epoch_seconds.element_id);
@@ -164,13 +184,8 @@ class PageController {
 
     // Attributes
     Object.values(Game.player.attributes).forEach(function(attribute) {
-      //let element = document.getElementById(attribute.dynamic_document_node.element_id);
-      //let element = document.getElementById(attribute.dynamic_document_node.element);
-      //let parent = document.getElementById(attribute.dynamic_document_node.parent_id);
-      //let parent = document.getElementById(attribute.dynamic_document_node.parent);
       let inner_html = attribute.dynamic_document_node.inner_html;
       console.log(inner_html);
-      //element.innerHTML = inner_html;
       attribute.dynamic_document_node.element.innerHTML = inner_html;
     });
 
