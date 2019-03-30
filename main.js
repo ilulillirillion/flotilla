@@ -92,52 +92,6 @@ class DocumentNode {
 }
 
 
-class ____GenericDocumentNode {
-  constructor({
-    element_id,
-    value = null,
-    element_type = 'p',
-    parent_id = null    
-  }) {
-
-    // Create the element on instantiation
-    element = document.getElementById(element_id);
-    if (!element) {
-      element = document.createElement(this.element_id);
-      this.parent.appendChild(element);
-      element.setAttribute('id', this.element_id);
-    }
-  }
-
-  get parent() {
-    // Simply trust that the parent exists
-    let parent = document.getElementById(this.parent_id);
-    return parent;
-  }
-
-  get element() {
-    let element = document.getElementById(this.element_id);
-    // If the element doesn't exist, create it
-    if (!element) {
-      element = document.createElement(this.element_id);
-      this.parent.appendChild(element);
-    }
-    // Always set the ID while updating element
-    element.setAttribute('id', this.element_id);
-    // Finally, just return the element
-    return element;
-  }
-  get inner_html() {
-    inner_html = this.value;
-    return inner_html;
-  }
-
-  tick() {
-    this.element.innerHTML = this.value;
-  }
-}
-
-
 class Attribute {
   //constructor(name, value=0, display_name=null, value_format_macro=null, maximum_value=null) {
   constructor({
