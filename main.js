@@ -106,6 +106,8 @@ class Attribute {
     this.value = value;
     this.max = max;
     //this.value_format_macro = value_format_macro;
+
+    
   }
 
   get document_node() {
@@ -119,6 +121,26 @@ class Attribute {
     return document_node;
   }
 
+}
+
+class PlayerAction {
+  constructor({
+    name,
+    action
+  }) {
+    this.name = name,
+    this.action = action
+  }
+
+  get document_node() {
+    let document_node = new DocumentNode({
+      element_id: String(`player_action_${this.name}_button`),
+      action: console.log('test'),
+      parent_id: 'player_info_div',
+      element_type: 'button'
+    });
+    return document_node;
+  }
 }
 
 class Player {
