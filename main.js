@@ -23,7 +23,6 @@ class DocumentNode {
     try {
       if (!element) {
         console.log('Creating new element for DocumentNode');
-        //element = document.createElement(this.element_id);
         element = document.createElement(this.element_type);
         this.parent.appendChild(element);
         console.log(`Setting element id to ${this.element_id}`);
@@ -32,7 +31,6 @@ class DocumentNode {
         if (linebreak) {
           let br = document.createElement('br');
           this.parent.appendChild(br);
-          //console.log(parent);
         }
         console.log('Checking element action');
         console.log(this);
@@ -47,15 +45,6 @@ class DocumentNode {
   }
 
   get value() {
-    /*
-    let value = _value;
-    if (this.max) {
-      if (value > this.max) {
-        value = this.max;
-      }
-    }
-    return value
-    */
     if (this.max) {
       if (this._value > this.max) {
         this._value = this.max;
@@ -126,97 +115,15 @@ class DocumentNode {
 
   tick() {
     console.log('Ticking DocumentNode');
-    //let inner_html = this.inner_html;
-    //this.element.innerHTML = inner_html;
     this.update_html();
   }
 }
 
-/*
-class Attribute {
-  //constructor(name, value=0, display_name=null, value_format_macro=null, maximum_value=null) {
-  constructor({
-    name,
-    value=0,
-    max=null,
-    decoration=null
-  }) {
-    this.decoration = decoration;
-    this.name = name;
-    //this.display_name = display_name || name;
-    this.value = value;
-    this.max = max;
-    //this.value_format_macro = value_format_macro;
-
-
-    // Hack to get document_node to be insantiated immediately
-    console.log(this.document_node);
-
-    
-  }
-
-  get document_node() {
-    let document_node = new DocumentNode({
-      element_id: String(`player_attribute_${this.name}_p`),
-      value: this.value,
-      max: this.max,
-      parent_id: 'player_info_div',
-      decoration: this.decoration
-    });
-    return document_node;
-  }
-
-}
-*/
-
-/*
-class PlayerAction {
-  constructor({
-    name,
-    action
-  }) {
-    console.log('Instantiating player action');
-    console.log(action);
-    this.name = name,
-    this.action = action
-
-    // Hack to get document_node to be insantiated immediately
-    console.log(this.document_node);
-  }
-
-  get document_node() {
-    let document_node = new DocumentNode({
-      element_id: String(`player_action_${this.name}_button`),
-      //value: 'test',
-      decoration: this.name,
-      action: this.action,
-      parent_id: 'player_action_div',
-      element_type: 'button'
-    });
-    return document_node;
-  }
-}
-*/
 
 class Player {
   
   constructor() {
 
-    /*
-    let attributes = {
-      'energy': new Attribute({
-        name: 'energy', 
-        value: 0,
-        max: 10,
-        decoration: ['Energy: ', ' watts']}),
-      'hull_integrity': new Attribute({
-        name: 'hull_integrity', 
-        value: 1,
-        max: 1,
-        decoration: 'Hull Integrity: '})
-      }
-    this.attributes = attributes;
-    */
    let attributes = {
      'energy': new DocumentNode({
        element_id: String('player_action_energy_p'),
@@ -235,24 +142,6 @@ class Player {
     }
     this.attributes = attributes;
 
-    /*
-    let action = function() {
-      console.log('test')
-    };
-    let actions = {
-      'test': new PlayerAction({
-        name: 'test_action',
-        //action: console.log('test')
-        action: action.bind()
-      }),
-      'charge_energy': new PlayerAction({
-        name: 'charge_energy',
-        action: this.charge_energy.bind(this)
-      })
-    }
-    this.actions = actions;
-    */
-
     let actions = {
       'charge_energy': new DocumentNode({
         element_id: 'player_action_charge_energy_button',
@@ -269,21 +158,11 @@ class Player {
   charge_energy() {
     this.attributes.energy._value += 1;
     this.attributes.energy.update_html();
-    //this.attributes.energy.document_node.update_html();
-    //if (this.attributes.energy.value > this.attributes.energy.max) {
-    //  this.attributes.energy.value = this.attributes.energy.max;
-    //}
-    //this.attributes.energy.document_node._value += 0.01;
   }
 
   tick() {
     // Player gains energy every tick
     this.attributes.energy._value += 0.01;
-    //this.attributes.energy.document_node.update_html();
-    //if (this.attributes.energy.value > this.attributes.energy.max) {
-    //  this.attributes.energy.value = this.attributes.energy.max;
-    //}
-    //this.attributes.energy.document_node._value += 0.01;
   }
 
 }
@@ -313,7 +192,6 @@ class PageController {
     // Attributes
     Object.values(Game.player.attributes).forEach(function(attribute) {
 
-      //attribute.document_node.tick();
       attribute.tick();
     });
 
