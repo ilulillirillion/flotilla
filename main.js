@@ -132,7 +132,7 @@ class DocumentNode {
   }
 }
 
-
+/*
 class Attribute {
   //constructor(name, value=0, display_name=null, value_format_macro=null, maximum_value=null) {
   constructor({
@@ -167,7 +167,9 @@ class Attribute {
   }
 
 }
+*/
 
+/*
 class PlayerAction {
   constructor({
     name,
@@ -194,11 +196,13 @@ class PlayerAction {
     return document_node;
   }
 }
+*/
 
 class Player {
   
   constructor() {
 
+    /*
     let attributes = {
       'energy': new Attribute({
         name: 'energy', 
@@ -212,7 +216,26 @@ class Player {
         decoration: 'Hull Integrity: '})
       }
     this.attributes = attributes;
+    */
+   let attributes = {
+     'energy': new DocumentNode({
+       element_id: String('player_action_energy_p'),
+       element_type: 'p',
+       value: 0,
+       max: 10,
+       parent_id: 'player_info_div',
+       decoration: ['Energy: ', ' watts']
+     }),
+     'hull_integrity': new DocumentNode({
+       name: 'hull_integrity',
+       value: 1,
+       max: 1,
+       decoration: 'Hull Integrity: '
+     })
+    }
+    this.attributes = attributes;
 
+    /*
     let action = function() {
       console.log('test')
     };
@@ -228,12 +251,25 @@ class Player {
       })
     }
     this.actions = actions;
+    */
+
+    let actions = {
+      'charge_energy': new DocumentNode({
+        element_id: 'player_action_charge_energy_button',
+        element_type: 'button',
+        decoration: 'Charge Energy',
+        action: this.charge_energy.bind(this),
+        parent_id: 'player_actions_div'
+      })
+    }
+    this.actions = actions;
 
   }
 
   charge_energy() {
-    this.attributes.energy.value += 1;
-    this.attributes.energy.document_node.update_html();
+    this.attributes.energy._value += 1;
+    this.attributes.energy.update_html();
+    //this.attributes.energy.document_node.update_html();
     //if (this.attributes.energy.value > this.attributes.energy.max) {
     //  this.attributes.energy.value = this.attributes.energy.max;
     //}
@@ -242,8 +278,8 @@ class Player {
 
   tick() {
     // Player gains energy every tick
-    this.attributes.energy.value += 0.01;
-    this.attributes.energy.document_node.update_html();
+    this.attributes.energy._value += 0.01;
+    //this.attributes.energy.document_node.update_html();
     //if (this.attributes.energy.value > this.attributes.energy.max) {
     //  this.attributes.energy.value = this.attributes.energy.max;
     //}
@@ -258,7 +294,7 @@ class PageController {
   static initialize_document() {
 
     let player_action_div = document.createElement('div');
-    player_action_div.setAttribute('id', 'player_action_div');
+    player_action_div.setAttribute('id', 'player_actions_div');
     document.body.append(player_action_div);
 
 
@@ -277,7 +313,8 @@ class PageController {
     // Attributes
     Object.values(Game.player.attributes).forEach(function(attribute) {
 
-      attribute.document_node.tick();
+      //attribute.document_node.tick();
+      attribute.tick();
     });
 
 
