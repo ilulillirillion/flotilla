@@ -2,6 +2,7 @@ class DocumentNode {
   constructor({
     element_id,
     value = '',
+    max = null,
     decoration = '',
     element_type = 'p',
     parent_id = null,
@@ -10,6 +11,7 @@ class DocumentNode {
 
     this.element_id = element_id;
     this.value = value;
+    this.max = max;
     this.decoration = decoration;
     this.element_type = element_type;
     this.parent_id = parent_id;
@@ -54,17 +56,28 @@ class DocumentNode {
     return element;
   }
 
+  //if (this.inner_html_format_macro == 'watts_si') {
+  //  value = String(`${parseInt('' + (value * 100)) / 100} watts`);
+  //  console.log(`watts_si value: <${value}>.`);
+
   get inner_html() {
     console.log('Retrieving DocumentNode inner_html');
     let inner_html = '';
+    let value = String(`${parseInt('' + (this.value * 100)) / 100}`);
+    if (this.max) {
+      value = String(`${value}/${this.max}`);
+    }
     //if (this.decoration.isArray()) {
     if (Array.isArray(this.decoration)) {
-      inner_html = this.decoration[0];
-      inner_html += String(this.value);
+      inner_html += this.decoration[0];
+      //inner_html += String(this.value);
+      inner_html += value;
       inner_html += this.decoration[1];
     }
     else {
-      inner_html = this.value;
+      //inner_html = this.value;
+      inner_html += this.decoration || '';
+      inner_html += value;
     }
     console.log(inner_html);
     return inner_html;
@@ -256,18 +269,28 @@ class ___DynamicDocumentNode {
 
 
 class Attribute {
-  constructor(name, value=0, display_name=null, value_format_macro=null, maximum_value=null) {
+  //constructor(name, value=0, display_name=null, value_format_macro=null, maximum_value=null) {
+  constructor({
+    name,
+    value=0,
+    max=null,
+    decoration=null
+  }) {
+    this.decoration = decoration;
     this.name = name;
-    this.display_name = display_name || name;
+    //this.display_name = display_name || name;
     this.value = value;
-    this.value_format_macro = value_format_macro;
+    this.max = max;
+    //this.value_format_macro = value_format_macro;
   }
 
   get document_node() {
     let document_node = new DocumentNode({
       element_id: String(`player_attribute_${this.name}_p`),
       value: this.value,
-      parent_id: 'player_info_div'
+      max: this.max,
+      parent_id: 'player_info_div',
+      decoration: this.decoration
     });
     return document_node;
   }
@@ -287,6 +310,12 @@ class Attribute {
   }
   */
 }
+
+//class AttributeMax {
+//  constructor({
+//    value
+//  })
+//}
 
 
 /*
@@ -310,9 +339,23 @@ class Player {
   constructor() {
 
     let attributes = {
-      'hull_integrity': new Attribute('hull_integrity', 0, 'Hull Integrity'),
-      'energy': new Attribute('energy', 0, 'Energy', 'watts_si')
-    };
+      'energy': new Attribute({
+        name: 'energy', 
+        value: 0,
+        max: 10,
+        decoration: ['Energy: ', ' watts']}),
+      'hull_integrity': new Attribute({
+        name: 'hull_integrity', 
+        value: 1,
+        max: 1,
+        decoration: 'Hull Integrity: '})
+      }
+      //'hull_integrity_max': new Attribute({
+      //  name: 'hull_integrity_max',
+      //  value: 1,
+      //  decoration: '(hull integrity max)'})
+      //}
+      
     this.attributes = attributes;
 
   }
@@ -320,6 +363,9 @@ class Player {
   tick() {
     // Player gains energy every tick
     this.attributes.energy.value += 0.01;
+    if (this.attributes.energy.value > this.attributes.energy.max) {
+      this.attributes.energy.value = this.attributes.energy.max;
+    }
   }
 
 }
