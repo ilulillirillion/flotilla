@@ -24,15 +24,15 @@ describe('Master Test Suite', function() {
           'Player hull integrity has correct initial value',
           //test_player.attributes.find())
           test_player.attributes.hull_integrity.value,
-          0),
+          1),
       new SimpleTest(
           'Player energy has correct initial value',
           test_player.attributes.energy.value,
-          0),
-      new SimpleTest(
-          'World epoch seconds has correct initial value',
-          test_world.epoch_seconds.value,
           0)
+      //new SimpleTest(
+      //    'World epoch seconds has correct initial value',
+      //    test_world.epoch_seconds.value,
+      //    0)
   ];
 
   simple_tests.forEach(function(test) {
