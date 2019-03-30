@@ -63,9 +63,6 @@ class DocumentNode {
     return element;
   }
 
-  //if (this.inner_html_format_macro == 'watts_si') {
-  //  value = String(`${parseInt('' + (value * 100)) / 100} watts`);
-  //  console.log(`watts_si value: <${value}>.`);
 
   get inner_html() {
     console.log('Retrieving DocumentNode inner_html');
@@ -74,15 +71,12 @@ class DocumentNode {
     if (this.max) {
       value = String(`${value}/${this.max}`);
     }
-    //if (this.decoration.isArray()) {
     if (Array.isArray(this.decoration)) {
       inner_html += this.decoration[0];
-      //inner_html += String(this.value);
       inner_html += value;
       inner_html += this.decoration[1];
     }
     else {
-      //inner_html = this.value;
       inner_html += this.decoration || '';
       inner_html += value;
     }
@@ -144,140 +138,6 @@ class ____GenericDocumentNode {
 }
 
 
-/*
-class ___CountNode {
-  constructor({
-      element_id,
-      value = null,
-      value_prefix = '',
-      value_suffix = '',
-      value_ceiling = null,
-      element_type = 'p',
-      parent_id = null
-  }) {
-    super();
-
-  }
-}
-*/
-
-
-
-/////////////////////////////////////
-
-class ___Component {
-
-  constructor(name='component', modifiers={}) {
-    this.name = name
-
-    this.modifiers = {};
-    for (const [modifier, value] of Object.entries(modifiers)) {
-      this.modifiers[modifier] = value;
-    }
-  }
-}
-
-//IDEA: create element on document in constructor?
-/*
-class ___GenericDocumentNode {
-  constructor(
-      value = '',
-      element_type = 'p',
-      element_id = null,
-      parent_id = null,
-  )
-
-  get parent() {
-    // Simply trust that the parent exists
-    let parent = document.getElementById(this.parent_id);
-    return parent;
-  }
-
-  get element() {
-    let element = document.getElementById(this.element_id);
-    if (!element) {
-      element = document.createElement(this.element_type);
-      this.parent.appendChild(element);
-    }
-    element.setAtrribute('id', this.element_id);
-    return element;
-  }
-
-  get inner_html() {
-    return this.value;
-  }
-
-  tick() {
-    this.element.innerHTML = this.inner_html;
-  }
-}
-*/
-
-
-/*
-class ___CountNode extends GenericDocumentNode {
-
-  // Think this needs to be psuedo named to work
-  constructor(
-    prefix,
-    tracked_value,
-    suffix
-  ) {
-    super();
-  }
-
-  get inner_html() {
-    let inner_html = value;
-
-  }
-}
-*/
-
-/*
-class ___DynamicDocumentNode {
-  constructor(name, value, element_type, element_id, parent_id, inner_html_name, inner_html_format_macro=null) {
-    this.name = name;
-    this.value = value;
-    this.element_type = element_type;
-    this.element_id = element_id;
-    this.parent_id = parent_id;
-    this.inner_html_name = inner_html_name;
-    this.inner_html_format_macro = inner_html_format_macro;
-  }
-
-  get parent() {
-    let parent = document.getElementById(this.parent_id);
-    //if (!parent) {
-    //  parent = document.body
-    //}
-    return parent;
-  }
-
-  get element() {
-    let element = document.getElementById(this.element_id);
-    if (!element) {
-      element = document.createElement(this.element_type);
-      this.parent.appendChild(element);
-    }
-    element.setAttribute('id', this.element_id);
-    return element;
-
-  }
-
-  get inner_html() {
-    console.log('getting inner_html');
-    let value = this.value;
-    console.log(`Raw value: <${value}>.`);
-    if (this.inner_html_format_macro == 'watts_si') {
-      value = String(`${parseInt('' + (value * 100)) / 100} watts`);
-      console.log(`watts_si value: <${value}>.`);
-    }
-    let inner_html = String(`${this.inner_html_name}: ${value}`);
-    return inner_html;
-  }
-}
-*/
-
 class Attribute {
   //constructor(name, value=0, display_name=null, value_format_macro=null, maximum_value=null) {
   constructor({
@@ -305,44 +165,7 @@ class Attribute {
     return document_node;
   }
 
-  /*
-  get dynamic_document_node() {
-    let element_type = String('p');
-    let dynamic_document_node = new DynamicDocumentNode(
-        this.name, 
-        this.value, 
-        element_type,
-        String(`player_attribute_${this.name}_${element_type}`),
-        String('player_info_div'),
-        this.display_name,
-        this.value_format_macro);
-    return dynamic_document_node;
-  }
-  */
 }
-
-//class AttributeMax {
-//  constructor({
-//    value
-//  })
-//}
-
-
-/*
-class Action {
-  constructor() {
-  }
-
-  get dynamic_document_node() {
-    let element_type = String('button');
-    let dynamic_document_node = new DynamicDocumentNode(
-      this.name,
-
-    )
-  }
-}
-*/
-
 
 class Player {
   
@@ -360,11 +183,6 @@ class Player {
         max: 1,
         decoration: 'Hull Integrity: '})
       }
-      //'hull_integrity_max': new Attribute({
-      //  name: 'hull_integrity_max',
-      //  value: 1,
-      //  decoration: '(hull integrity max)'})
-      //}
       
     this.attributes = attributes;
 
@@ -391,11 +209,6 @@ class PageController {
     console.log(document.body);
     document.body.append(player_info_div);
 
-    // World second ticker
-    //let element = document.createElement(Game.world.epoch_seconds.element_type);
-    //element.setAttribute('id', Game.world.epoch_seconds.element_id);
-    //let parent = document.getElementById(Game.world.epoch_seconds.parent_id);
-    //parent.appendChild(element);
 
   }
 
@@ -404,23 +217,10 @@ class PageController {
 
     // Attributes
     Object.values(Game.player.attributes).forEach(function(attribute) {
-      //let inner_html = attribute.dynamic_document_node.inner_html;
-      //let inner_html = attribute.document_node.inner_html;
-      //console.log(inner_html);
-      //attribute.dynamic_document_node.element.innerHTML = inner_html;
 
       attribute.document_node.tick();
     });
 
-    /*
-    // World Epoch Seconds
-    console.log(Game.world.epoch_seconds);
-    let element = document.getElementById(Game.world.epoch_seconds.element_id);
-    //let parent = document.getElementById(Game.world.epoch_seconds.dynamic_document_node.parent_id);
-    let inner_html = Game.world.epoch_seconds.inner_html;
-    console.log(inner_html);
-    element.innerHTML = inner_html;
-    */
 
   }
 }
@@ -430,7 +230,6 @@ class World {
   constructor() {
     console.log('instantiating world');
     console.log(document.getElementById('player_info_div'));
-    //this.epoch_seconds = new DynamicDocumentNode({
     this.epoch_seconds = new DocumentNode({
       element_id: 'world_epoch_seconds',
       value: 0,
@@ -448,8 +247,6 @@ class World {
 
 
 class Game {
-  //static player = new Player();
-  //static world = new World();
   static page_controller = PageController;
 }
 
@@ -469,8 +266,6 @@ window.onload = function() {
   Game.player = new Player();
   Game.world = new World();
 
-  //Game.page_controller.initialize_document();
-  //Game.page_controller.update_document();
   Game.main_loop();
   console.log(Game.player.attributes);
 }

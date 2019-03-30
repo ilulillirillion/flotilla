@@ -12,40 +12,9 @@ class SimpleTest {
 }
 
 
-//var example_func = function() {
-//  console.log('test');
-//};
 
 
 describe('Master Test Suite', function() {
-
-  /*
-  beforeAll((done) => {
-    document.addEventListener("DOMContentLoaded", function(event) {
-     console.log("DOM fully loaded and parsed");
-     done();
-   });
- });
- */
-
-  //console.log('TEST');
-  //console.log(example_func);
-  //example_func();
-
-  /*
-
-    beforeAll((done) => {
-    var spy = spyOn(window, "example_func");
-    $(document).ready(example_func);
-    setTimeout(function(){
-      expect(spy).toHaveBeenCalled();
-      done();
-    }, 1000);
-  });
-  */
-
-
-  //mock_document = document.get
 
 
   console.log('TEST2');
@@ -54,12 +23,10 @@ describe('Master Test Suite', function() {
   console.log(test_player);
   let test_world = new World();
   console.log(test_world);
-  //}, 1000);
 
   simple_tests = [
       new SimpleTest(
           'Player hull integrity has correct initial value',
-          //test_player.attributes.find())
           test_player.attributes.hull_integrity.value,
           1),
       new SimpleTest(
@@ -74,7 +41,6 @@ describe('Master Test Suite', function() {
 
   simple_tests.forEach(function(test) {
     it(test.name, function() {
-      //window.addEventListener('load', function(){}, false)
       expect(test.test_value).toBe(test.expected_value);
     });
   });
