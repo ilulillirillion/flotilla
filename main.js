@@ -7,7 +7,7 @@ class DocumentNode {
     decoration = '',
     element_type = 'p',
     parent_id = null,
-    linebreak = true
+    linebreak = false
   }) {
 
     this.element_id = element_id;
