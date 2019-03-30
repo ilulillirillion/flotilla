@@ -18,19 +18,22 @@ class DocumentNode {
 
     // Create the element on instantiation
     let element = document.getElementById(element_id);
-    if (!element) {
-      console.log('Creating new element for DocumentNode');
-      element = document.createElement(this.element_id);
-      this.parent.appendChild(element);
-      console.log(`Setting element id to ${this.element_id}`);
-      element.setAttribute('id', this.element_id);
-      element.innerHTML = this.inner_html;
-      if (linebreak) {
-        let br = document.createElement('br');
-        this.parent.appendChild(br);
-        //console.log(parent);
+    try {
+      if (!element) {
+        console.log('Creating new element for DocumentNode');
+        element = document.createElement(this.element_id);
+        this.parent.appendChild(element);
+        console.log(`Setting element id to ${this.element_id}`);
+        element.setAttribute('id', this.element_id);
+        element.innerHTML = this.inner_html;
+        if (linebreak) {
+          let br = document.createElement('br');
+          this.parent.appendChild(br);
+          //console.log(parent);
+        }
       }
     }
+    catch(err) {}
   }
 
   get parent() {
@@ -39,6 +42,10 @@ class DocumentNode {
     if (this.parent_id) {
       // Simply trust that the parent exists
       parent = document.getElementById(this.parent_id);
+    }
+    if (!parent) {
+      console.log('parent is null, substituting body');
+      parent = document.body;
     }
     return parent;
   }
@@ -226,7 +233,7 @@ class ___CountNode extends GenericDocumentNode {
 }
 */
 
-
+/*
 class ___DynamicDocumentNode {
   constructor(name, value, element_type, element_id, parent_id, inner_html_name, inner_html_format_macro=null) {
     this.name = name;
@@ -240,6 +247,9 @@ class ___DynamicDocumentNode {
 
   get parent() {
     let parent = document.getElementById(this.parent_id);
+    //if (!parent) {
+    //  parent = document.body
+    //}
     return parent;
   }
 
@@ -266,7 +276,7 @@ class ___DynamicDocumentNode {
     return inner_html;
   }
 }
-
+*/
 
 class Attribute {
   //constructor(name, value=0, display_name=null, value_format_macro=null, maximum_value=null) {
@@ -378,15 +388,14 @@ class PageController {
 
     let player_info_div = document.createElement('div');
     player_info_div.setAttribute('id', 'player_info_div');
+    console.log(document.body);
     document.body.append(player_info_div);
 
     // World second ticker
-    /*
-    let element = document.createElement(Game.world.epoch_seconds.element_type);
-    element.setAttribute('id', Game.world.epoch_seconds.element_id);
-    let parent = document.getElementById(Game.world.epoch_seconds.parent_id);
-    parent.appendChild(element);
-    */
+    //let element = document.createElement(Game.world.epoch_seconds.element_type);
+    //element.setAttribute('id', Game.world.epoch_seconds.element_id);
+    //let parent = document.getElementById(Game.world.epoch_seconds.parent_id);
+    //parent.appendChild(element);
 
   }
 
@@ -419,28 +428,31 @@ class PageController {
 
 class World {
   constructor() {
-    /*
-    this.epoch_seconds = new DynamicDocumentNode(
-        'epoch_seconds',
-        0,
-        'p',
-        'world_epoch_seconds',
-        'player_info_div',
-        'World Age');
-    */
+    console.log('instantiating world');
+    console.log(document.getElementById('player_info_div'));
+    //this.epoch_seconds = new DynamicDocumentNode({
+    this.epoch_seconds = new DocumentNode({
+      element_id: 'world_epoch_seconds',
+      value: 0,
+      decoration: ['World Age: ', ' seconds'],
+      parent_id: 'player_info_div'
+    })
   }
 
   tick() {
-    //this.epoch_seconds.value += 1;
+    this.epoch_seconds.value += 1;
+    console.log(`Epoch seconds: ${this.epoch_seconds.value}`);
+    this.epoch_seconds.tick();
   }
 }
 
 
 class Game {
-  static player = new Player();
-  static world = new World();
+  //static player = new Player();
+  //static world = new World();
   static page_controller = PageController;
 }
+
 Game.main_loop = function() {
   setInterval(function() {
     Game.player.tick();
@@ -453,10 +465,12 @@ Game.main_loop = function() {
 // Game Logic
 window.onload = function() {
 
-  
-
   Game.page_controller.initialize_document();
-  Game.page_controller.update_document();
+  Game.player = new Player();
+  Game.world = new World();
+
+  //Game.page_controller.initialize_document();
+  //Game.page_controller.update_document();
   Game.main_loop();
   console.log(Game.player.attributes);
 }
