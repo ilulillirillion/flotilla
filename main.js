@@ -48,6 +48,41 @@ class DocumentNode {
     catch(err) {}
   }
 
+  modify_value(modification, set=false) {
+    if (set) {
+      var proposed_value = modification;
+    }
+    else {
+      var proposed_value = this.value + modification;
+    }
+    if (this.max) {
+      //if (this.value == this.max) {
+      //  return false;
+      //}
+      if (proposed_value >= this.max) {
+        proposed_value = this.max;
+      }
+    }
+    console.log('Checking proposed value against minimum');
+    console.log(this.min);
+    //if (this.min && proposed_value < this.min) {
+    if (this.min != null) {
+      console.log(`Proposed value, min: ${proposed_value}, ${this.min}`);
+      if (proposed_value < this.min) {
+        console.log('Value is below minimum, setting to minimum');
+        proposed_value = this.min;
+      }
+    }
+    this.value = proposed_value;
+    this.update_html();
+
+    // Trigger listeners
+    for (var i=0; i < this.listeners.length; i++) {
+      console.log('iterating on listeners');
+      this.listeners[i]();
+    }
+  }
+
   update_value(change) {
     let value = this.value + change;
     if (this.max && value > this.max) {
@@ -187,6 +222,7 @@ class Player {
         element_type: 'p',
         value: 1,
         max: 5,
+        min: 0,
         decoration: 'Hull Integrity: ',
         parent_id: 'player_info_div',
         listeners: [
@@ -229,17 +265,39 @@ class Player {
         decoration: 'Repair Hull',
         action: this.repair_hull.bind(this),
         parent_id: 'player_actions_div'
+      }),
+      'reboot': new DocumentNode({
+        element_id: 'player_action_reboot_button',
+        element_type: 'button',
+        decoration: 'Reboot',
+        action: this.reboot.bind(this),
+        parent_id: 'player_actions_div'
       })
     }
     this.actions = actions;
 
   }
 
+  reboot() {
+    if (this.attributes.energy.value >= 1) {
+      Game.write('Rebooting');
+      this.attributes.energy.modify_value(-1);
+      //this.attributes.energy.modify_value(-10);
+      this.attributes.hull_integrity.modify_value(1, true);
+    }
+  }
+
   repair_hull() {
-    if (this.attributes.minerals.value >= 10 && this.attributes.hull_integrity.value < this.attributes.hull_integrity.max) {
+    if (this.attributes.minerals.value >= 10 &&
+        this.attributes.energy.value >= 1 &&
+        this.attributes.hull_integrity.value < this.attributes.hull_integrity.max) {
+        //this.attributes.energy.value >= 1) {
       Game.write('Repairing hull');
-      this.attributes.minerals.update_value(-10);
-      this.attributes.hull_integrity.update_value(1);
+      //this.attributes.minerals.update_value(-10);
+      this.attributes.minerals.modify_value(-10);
+      this.attributes.energy.modify_value(-1);
+      //this.attributes.hull_integrity.update_value(1);
+      this.attributes.hull_integrity.modify_value(1);
     }
   }
 
@@ -248,45 +306,60 @@ class Player {
     if (this.attributes.hull_integrity.value <= 0) {
       console.log('HULL INTEGRITY CRITICAL!');
       //this.attributes.minerals.update_value()
-      this.attributes.minerals.set_value(0);
-      this.attributes.hull_integrity.set_value(1);
+      //this.attributes.minerals.set_value(0);
+      this.attributes.minerals.modify_value(0, true);
+      //this.attributes.energy.set_value(0);
+      this.attributes.energy.modify_value(0, true);
+      //this.attributes.hull_integrity.set_value(1);
     }
   }
 
   gather_space_debris() {
     console.log('test: gathering space debris');
     if (this.attributes.energy.value > 0.1) {
+      /*
       this.attributes.energy._value -= 0.1;
       this.attributes.minerals._value += 1;
       this.attributes.energy.update_html();
       this.attributes.minerals.update_html();
+      */
+      this.attributes.energy.modify_value(0.1);
+      this.attributes.minerals.modify_value(1);
     }
   }
 
   charge_energy() {
     //this.attributes.energy._value += 1;
-    this.attributes.energy.update_value(1);
-    this.attributes.energy.update_html();
+    //this.attributes.energy.update_value(1);
+    //this.attributes.energy.update_html();
+    this.attributes.energy.modify_value(0.01);
   }
 
   tick() {
+
+    console.log('hull test...');
+    console.log(this.attributes.hull_integrity);
     // Player gains energy every tick
     //this.attributes.energy._value += 0.01;
-    this.attributes.energy.update_value(0.01);
+    //this.attributes.energy.update_value(0.01);
+    this.attributes.energy.modify_value(0.01);
 
 
     // Collide with space debris random event;
-    if (Math.random() < 0.3) {
+    if (Math.random() < 0.05) {
       console.log('Triggering space collision passive event');
       Game.write('Colliding with space debris');
       //this.attributes.minerals.value += 10;
-      this.attributes.minerals.update_value(10);
+      //this.attributes.minerals.update_value(10);
+      this.attributes.minerals.modify_value(10);
       
-      this.attributes.minerals.update_html();
+      //this.attributes.minerals.update_html();
       //this.attributes.hull_integrity._value -= 1;
-      if (Math.random() < 0.5) {
-        this.attributes.hull_integrity.update_value(-1);
-        this.attributes.hull_integrity.update_html();
+      if (Math.random() < 0.3) {
+        //this.attributes.hull_integrity.update_value(-1);
+        //this.attributes.hull_integrity.update_html();
+        console.log('Decrementing hull value...');
+        this.attributes.hull_integrity.modify_value(-1);
       }
     }
   }
@@ -346,7 +419,8 @@ class World {
 
   tick() {
     //this.epoch_seconds._value += 1;
-    this.epoch_seconds.update_value(1);
+    //this.epoch_seconds.update_value(1);
+    this.epoch_seconds.modify_value(1);
     console.log(`Epoch seconds: ${this.epoch_seconds.value}`);
     this.epoch_seconds.tick();
   }
