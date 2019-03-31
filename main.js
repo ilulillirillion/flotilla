@@ -4,19 +4,23 @@ class DocumentNode {
     value = '',
     action = null,
     max = null,
+    min = null,
     decoration = '',
     element_type = 'p',
     parent_id = null,
-    linebreak = false
+    linebreak = false,
+    listeners = []
   }) {
 
     this.element_id = element_id;
-    this._value = value;
+    this.value = value;
     this.action = action;
     this.max = max;
+    this.min = min;
     this.decoration = decoration;
     this.element_type = element_type;
     this.parent_id = parent_id;
+    this.listeners = listeners;
 
     // Create the element on instantiation
     let element = document.getElementById(element_id);
@@ -44,15 +48,34 @@ class DocumentNode {
     catch(err) {}
   }
 
-  get value() {
+  update_value(change) {
+    let value = this.value + change;
+    if (this.max && value > this.max) {
+      value = this.max;
+    }
+    else if (this.min && value < this.min) {
+      value = this.min;
+    }
+    //return value;
+    this.value = value;
+    //this.listeners.forEach(function(listener) {
+    for (var i=0; i < this.listeners.length; i++) {
+      console.log('iterating on listeners');
+      this.listeners[i]();
+    }
+  }
+
+  //get value() {
+    /*
     if (this.max) {
       if (this._value > this.max) {
         this._value = this.max;
       }
     }
+    */
     //this.tick();
-    return this._value;
-  }
+  //  return this._value;
+  //}
 
   get parent() {
     // Note: https://jsperf.com/unique-by-tag-name
@@ -120,26 +143,41 @@ class DocumentNode {
 }
 
 
+/*
+class ValueListener {
+  constructor({
+    target,
+
+  }) {}
+}
+*/
+
+
 class Player {
   
   constructor() {
-
-   let attributes = {
-     'energy': new DocumentNode({
-       element_id: String('player_attribute_energy_p'),
-       element_type: 'p',
-       value: 0,
-       max: 10,
-       parent_id: 'player_info_div',
-       decoration: ['Energy: ', ' watts']
-     }),
-     'hull_integrity': new DocumentNode({
-       element_id: String('player_attribute_hull_integrity_p'),
-       element_type: 'p',
-       value: 1,
-       max: 1,
-       decoration: 'Hull Integrity: '
-     }),
+    let test_listener = function() {
+      console.log('test listener fired!');
+    }
+    let attributes = {
+      'energy': new DocumentNode({
+        element_id: String('player_attribute_energy_p'),
+        element_type: 'p',
+        value: 0,
+        max: 10,
+        parent_id: 'player_info_div',
+        decoration: ['Energy: ', ' watts']
+      }),
+      'hull_integrity': new DocumentNode({
+        element_id: String('player_attribute_hull_integrity_p'),
+        element_type: 'p',
+        value: 1,
+        max: 1,
+        decoration: 'Hull Integrity: ',
+        listeners: [
+          test_listener.bind()
+        ]
+      }),
      'minerals': new DocumentNode({
        element_id: 'player_attribute_minerals_p',
        value: 0,
@@ -184,21 +222,26 @@ class Player {
   }
 
   charge_energy() {
-    this.attributes.energy._value += 1;
+    //this.attributes.energy._value += 1;
+    this.attributes.energy.update_value(1);
     this.attributes.energy.update_html();
   }
 
   tick() {
     // Player gains energy every tick
-    this.attributes.energy._value += 0.01;
+    //this.attributes.energy._value += 0.01;
+    this.attributes.energy.update_value(0.01);
 
 
     // Collide with space debris random event;
-    if (Math.random() < 0.1) {
+    if (Math.random() < 0.3) {
       console.log('Triggering space collision passive event');
-      this.attributes.minerals._value += 10;
+      //this.attributes.minerals.value += 10;
+      this.attributes.minerals.update_value(10);
+      
       this.attributes.minerals.update_html();
-      this.attributes.hull_integrity._value -= 1;
+      //this.attributes.hull_integrity._value -= 1;
+      this.attributes.hull_integrity.update_value(-1);
       this.attributes.hull_integrity.update_html();
     }
   }
@@ -251,7 +294,8 @@ class World {
   }
 
   tick() {
-    this.epoch_seconds._value += 1;
+    //this.epoch_seconds._value += 1;
+    this.epoch_seconds.update_value(1);
     console.log(`Epoch seconds: ${this.epoch_seconds.value}`);
     this.epoch_seconds.tick();
   }
