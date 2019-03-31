@@ -191,6 +191,16 @@ class Player {
   tick() {
     // Player gains energy every tick
     this.attributes.energy._value += 0.01;
+
+
+    // Collide with space debris random event;
+    if (Math.random() < 0.1) {
+      console.log('Triggering space collision passive event');
+      this.attributes.minerals._value += 10;
+      this.attributes.minerals.update_html();
+      this.attributes.hull_integrity._value -= 1;
+      this.attributes.hull_integrity.update_html();
+    }
   }
 
 }
