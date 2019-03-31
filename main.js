@@ -126,7 +126,7 @@ class Player {
 
    let attributes = {
      'energy': new DocumentNode({
-       element_id: String('player_action_energy_p'),
+       element_id: String('player_attribute_energy_p'),
        element_type: 'p',
        value: 0,
        max: 10,
@@ -134,10 +134,16 @@ class Player {
        decoration: ['Energy: ', ' watts']
      }),
      'hull_integrity': new DocumentNode({
-       name: 'hull_integrity',
+       element_id: String('player_attribute_hull_integrity_p'),
+       element_type: 'p',
        value: 1,
        max: 1,
        decoration: 'Hull Integrity: '
+     }),
+     'minerals': new DocumentNode({
+       element_id: 'player_attribute_minerals_p',
+       value: 0,
+       decoration: 'Minerals: '
      })
     }
     this.attributes = attributes;
@@ -149,10 +155,32 @@ class Player {
         decoration: 'Charge Energy',
         action: this.charge_energy.bind(this),
         parent_id: 'player_actions_div'
+      }),
+      //'collide_with_space_debris': new DocumentNode({
+      //  element_id: 'player_action_collide_with_space_debris_button',
+      //  element_type: 'button',
+      //  decoration: 'Collide'
+      //}),
+      'gather_space_debris': new DocumentNode({
+        element_id: 'player_action_gather_space_debris_button',
+        element_type: 'button',
+        decoration: 'Gather Space Debris',
+        action: this.gather_space_debris.bind(this),
+        parent_id: 'player_actions_div'
       })
     }
     this.actions = actions;
 
+  }
+
+  gather_space_debris() {
+    console.log('test: gathering space debris');
+    if (this.attributes.energy.value > 0.1) {
+      this.attributes.energy._value -= 0.1;
+      this.attributes.minerals._value += 1;
+      this.attributes.energy.update_html();
+      this.attributes.minerals.update_html();
+    }
   }
 
   charge_energy() {
