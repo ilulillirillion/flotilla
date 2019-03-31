@@ -65,6 +65,20 @@ class DocumentNode {
     }
   }
 
+  set_value(value) {
+    if (this.max && value > this.max) {
+      value = this.max;
+    }
+    else if (this.min && value < this.min) {
+      value = this.min;
+    }
+    this.value = value;
+    for (var i=0; i < this.listeners.length; i++) {
+      console.log('iterating on listeners');
+      this.listeners[i]();
+    }
+  }
+
   //get value() {
     /*
     if (this.max) {
@@ -175,7 +189,8 @@ class Player {
         max: 1,
         decoration: 'Hull Integrity: ',
         listeners: [
-          test_listener.bind()
+          test_listener.bind(),
+          this.check_if_hull_critical.bind(this)
         ]
       }),
      'minerals': new DocumentNode({
@@ -211,6 +226,16 @@ class Player {
 
   }
 
+  check_if_hull_critical() {
+    console.log('Checking if hull is critical');
+    if (this.attributes.hull_integrity.value <= 0) {
+      console.log('HULL INTEGRITY CRITICAL!');
+      //this.attributes.minerals.update_value()
+      this.attributes.minerals.set_value(0);
+      this.attributes.hull_integrity.set_value(1);
+    }
+  }
+
   gather_space_debris() {
     console.log('test: gathering space debris');
     if (this.attributes.energy.value > 0.1) {
@@ -241,8 +266,10 @@ class Player {
       
       this.attributes.minerals.update_html();
       //this.attributes.hull_integrity._value -= 1;
-      this.attributes.hull_integrity.update_value(-1);
-      this.attributes.hull_integrity.update_html();
+      if (Math.random() < 0.5) {
+        this.attributes.hull_integrity.update_value(-1);
+        this.attributes.hull_integrity.update_html();
+      }
     }
   }
 
