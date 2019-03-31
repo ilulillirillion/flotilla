@@ -186,8 +186,9 @@ class Player {
         element_id: String('player_attribute_hull_integrity_p'),
         element_type: 'p',
         value: 1,
-        max: 1,
+        max: 5,
         decoration: 'Hull Integrity: ',
+        parent_id: 'player_info_div',
         listeners: [
           test_listener.bind(),
           this.check_if_hull_critical.bind(this)
@@ -196,7 +197,8 @@ class Player {
      'minerals': new DocumentNode({
        element_id: 'player_attribute_minerals_p',
        value: 0,
-       decoration: 'Minerals: '
+       decoration: 'Minerals: ',
+       parent_id: 'player_info_div'
      })
     }
     this.attributes = attributes;
@@ -220,10 +222,25 @@ class Player {
         decoration: 'Gather Space Debris',
         action: this.gather_space_debris.bind(this),
         parent_id: 'player_actions_div'
+      }),
+      'repair_hull': new DocumentNode({
+        element_id: 'player_action_repair_hull_button',
+        element_type: 'button',
+        decoration: 'Repair Hull',
+        action: this.repair_hull.bind(this),
+        parent_id: 'player_actions_div'
       })
     }
     this.actions = actions;
 
+  }
+
+  repair_hull() {
+    if (this.attributes.minerals.value >= 10 && this.attributes.hull_integrity.value < this.attributes.hull_integrity.max) {
+      Game.write('Repairing hull');
+      this.attributes.minerals.update_value(-10);
+      this.attributes.hull_integrity.update_value(1);
+    }
   }
 
   check_if_hull_critical() {
@@ -261,6 +278,7 @@ class Player {
     // Collide with space debris random event;
     if (Math.random() < 0.3) {
       console.log('Triggering space collision passive event');
+      Game.write('Colliding with space debris');
       //this.attributes.minerals.value += 10;
       this.attributes.minerals.update_value(10);
       
@@ -290,6 +308,12 @@ class PageController {
     console.log(document.body);
     document.body.append(player_info_div);
 
+
+    let game_messages_div = document.createElement('div');
+    game_messages_div.setAttribute('id', 'game_messages_div');
+    console.log(`Game messages div: ${game_messages_div}`)
+    document.body.append(game_messages_div);
+    console.log(game_messages_div);
 
 
   }
@@ -331,6 +355,46 @@ class World {
 
 class Game {
   static page_controller = PageController;
+
+  static write(message) {
+    /*
+    let element = document.getElementById(element_id);
+    try {
+      if (!element) {
+        console.log('Creating new element for DocumentNode');
+        element = document.createElement(this.element_type);
+        this.parent.appendChild(element);
+        console.log(`Setting element id to ${this.element_id}`);
+        element.setAttribute('id', this.element_id);
+        element.innerHTML = this.inner_html;
+        if (linebreak) {
+          let br = document.createElement('br');
+          this.parent.appendChild(br);
+        }
+        console.log('Checking element action');
+        console.log(this);
+        console.log(this.action);
+        if (this.action != null) {
+          console.log('Adding action to element');
+          element.onclick = this.action;
+        }
+      }
+    }
+    */
+
+    let element = document.createElement('p');
+    element.innerHTML = String(message);
+
+    let parent = document.getElementById('game_messages_div');
+    if (parent.children.length >= 3) {
+      let earliest_message = parent.children[0];
+      parent.removeChild(earliest_message);
+    }
+
+    parent.appendChild(element);
+    
+
+  }
 }
 
 Game.main_loop = function() {
