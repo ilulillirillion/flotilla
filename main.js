@@ -9,7 +9,8 @@ class DocumentNode {
     element_type = 'p',
     parent_id = null,
     linebreak = false,
-    listeners = []
+    listeners = [],
+    visible_when = null
   }) {
 
     this.element_id = element_id;
@@ -21,6 +22,7 @@ class DocumentNode {
     this.element_type = element_type;
     this.parent_id = parent_id;
     this.listeners = listeners;
+    this.visible_when = visible_when;
 
     // Create the element on instantiation
     let element = document.getElementById(element_id);
@@ -202,12 +204,35 @@ class ValueListener {
 */
 
 
+
+class Component {
+  constructor({
+    player_object,
+    name,
+    bonuses
+  }) {
+    this.name = name;
+    this.bonuses = bonuses
+
+    //this.bonuses.forEach(function(bonus) {
+    for (const [attribute, modification] of Object.entries(this.bonuses)) {
+      player_object.attributes[attribute].max += (modification);
+    }
+
+  }
+}
+
+
 class Player {
   
   constructor() {
     let test_listener = function() {
       console.log('test listener fired!');
     }
+
+    let components = [];
+    this.components = components;
+
     let attributes = {
       'energy': new DocumentNode({
         element_id: String('player_attribute_energy_p'),
@@ -272,6 +297,23 @@ class Player {
         decoration: 'Reboot',
         action: this.reboot.bind(this),
         parent_id: 'player_actions_div'
+      }),
+      'build_test_component': new DocumentNode({
+        element_id: 'player_action_build_test_component',
+        element_type: 'button',
+        decoration: 'Build test component',
+        action: this.build_simple_storage.bind(this),
+        parent_id: 'player_actions_div',
+        visible_when: [
+          function() {
+            if (!'test_component' in this.attributes) {
+              return true;
+            }
+            else {
+              return false;
+            }
+          }
+        ]
       })
     }
     this.actions = actions;
@@ -285,6 +327,17 @@ class Player {
       //this.attributes.energy.modify_value(-10);
       this.attributes.hull_integrity.modify_value(1, true);
     }
+  }
+
+  build_simple_storage() {
+    let component = new Component({
+      player_object: this,
+      name: 'test_component',
+      bonuses: {
+        'hull_integrity': 5
+      }
+    });
+    this.components.push(component);
   }
 
   repair_hull() {
