@@ -10,7 +10,7 @@ class DocumentNode {
     parent_id = null,
     linebreak = false,
     listeners = [],
-    visible_when = null
+    visible_when = []
   }) {
 
     this.element_id = element_id;
@@ -41,13 +41,29 @@ class DocumentNode {
         console.log('Checking element action');
         console.log(this);
         console.log(this.action);
+        //if (this.action != null) {
         if (this.action != null) {
           console.log('Adding action to element');
-          element.onclick = this.action;
+          //element.onclick = this.action;
+          //element.onclick = function() {
+          //  action();
+          //  this.update_visibility();
+          //}
+          element.onclick = this.resolve_action.bind(this);
+          //let that = this;
+          //element.onclick = function(that) {
+          //  that.action;
+          //  that.update_visibility();
+          //}
         }
       }
     }
     catch(err) {}
+  }
+
+  resolve_action() {
+    this['action']();
+    this.update_visibility();
   }
 
   modify_value(modification, set=false) {
@@ -78,11 +94,36 @@ class DocumentNode {
     this.value = proposed_value;
     this.update_html();
 
+    // visibility rules
+    //this.visible_when.forEach(function(rule))
+    this.update_visibility();
+    
+
+    
+
     // Trigger listeners
     for (var i=0; i < this.listeners.length; i++) {
       console.log('iterating on listeners');
       this.listeners[i]();
     }
+  }
+
+  update_visibility() {
+    let show_element = 'block'
+    this.visible_when.forEach(function(rule) {
+      console.log('iterating a visibility rule');
+      console.log(rule);
+      //if (!rule()) {
+      //  show_element = 'hidden'
+      //}
+      let result = rule();
+      if (!result) {
+        console.log('hiding element');
+        show_element = 'none';
+      }
+    });
+    console.log(show_element);
+    this.element.style.display = show_element;
   }
 
   update_value(change) {
@@ -258,12 +299,14 @@ class Player {
      'minerals': new DocumentNode({
        element_id: 'player_attribute_minerals_p',
        value: 0,
+       max: 10,
        decoration: 'Minerals: ',
        parent_id: 'player_info_div'
      })
     }
     this.attributes = attributes;
 
+    var that = this;
     let actions = {
       'charge_energy': new DocumentNode({
         element_id: 'player_action_charge_energy_button',
@@ -301,17 +344,24 @@ class Player {
       'build_test_component': new DocumentNode({
         element_id: 'player_action_build_test_component',
         element_type: 'button',
-        decoration: 'Build test component',
+        decoration: 'Build crude minerals storage',
         action: this.build_simple_storage.bind(this),
         parent_id: 'player_actions_div',
         visible_when: [
           function() {
-            if (!'test_component' in this.attributes) {
-              return true;
-            }
-            else {
-              return false;
-            }
+            console.log(that.components);
+            //if (!'test_component' in that.components) {
+            that.components.forEach(function(component) {
+              console.log('checking component name');
+              if (component.name == 'crude_minerals_storage') {
+                console.log('found match');
+                return true;
+              }
+            });
+            //return true;
+          //}
+          //else {
+            return false;
           }
         ]
       })
@@ -330,14 +380,17 @@ class Player {
   }
 
   build_simple_storage() {
-    let component = new Component({
-      player_object: this,
-      name: 'test_component',
-      bonuses: {
-        'hull_integrity': 5
-      }
-    });
-    this.components.push(component);
+    if (this.attributes.minerals.value >= 10) {
+      this.attributes.minerals.modify_value(-10);
+      let component = new Component({
+        player_object: this,
+        name: 'crude_mineral_storage',
+        bonuses: {
+          'minerals': 5
+        }
+      });
+      this.components.push(component);
+    }
   }
 
   repair_hull() {
@@ -385,7 +438,7 @@ class Player {
     //this.attributes.energy._value += 1;
     //this.attributes.energy.update_value(1);
     //this.attributes.energy.update_html();
-    this.attributes.energy.modify_value(0.01);
+    this.attributes.energy.modify_value(0.1);
   }
 
   tick() {
